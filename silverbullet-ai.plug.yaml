@@ -164,3 +164,9 @@ functions:
     events:
       - editor:pageLoaded
       - editor:pageReloaded
+  transcribeAudio:
+    path: src/transcription.ts:transcribeAudio
+    command:
+      name: "AI: Transcribe Voice to Text"
+      key: "Ctrl-Shift-T" 
+      mac: "Cmd-Shift-T"

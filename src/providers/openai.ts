@@ -199,6 +199,62 @@ export class OpenAIProvider extends AbstractProvider {
       throw error;
     }
   }
+  
+  async transcribeAudio(options: AudioTranscriptionOptions): Promise<string> {
+    try {
+      const formData = new FormData();
+    
+      // Convert base64 to blob
+      const binaryString = atob(options.audio);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const audioBlob = new Blob([bytes], { type: 'audio/webm' });
+    
+      // Add file and other parameters to formData
+      formData.append("file", audioBlob, "audio.webm");
+      formData.append("model", options.model || "gpt-4o-transcribe");
+      if (options.language) {
+        formData.append("language", options.language);
+      }
+    
+      const headers: any = {};
+    
+      if (this.requireAuth) {
+        headers["Authorization"] = `Bearer ${this.apiKey}`;
+      }
+    
+      const response = await nativeFetch(
+        `${this.baseUrl}/audio/transcriptions`,
+        {
+          method: "POST",
+          headers: headers,
+          body: formData,
+        }
+      );
+    
+      if (!response.ok) {
+        console.error("HTTP response: ", response);
+        console.error("HTTP response body: ", await response.text());
+        throw new Error(`HTTP error, status: ${response.status}`);
+      }
+    
+      const data = await response.json();
+      if (!data || !data.text) {
+        throw new Error("Invalid response from OpenAI transcription endpoint.");
+      }
+    
+      return data.text;
+    } catch (error) {
+      console.error("Error calling OpenAI transcription endpoint:", error);
+      await editor.flashNotification(
+        "Error calling OpenAI transcription endpoint.",
+        "error"
+      );
+      throw error;
+    }
+  }
 }
 
 export class OpenAIEmbeddingProvider extends AbstractEmbeddingProvider {

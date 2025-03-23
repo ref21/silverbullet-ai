@@ -151,6 +151,12 @@ export type EmbeddingModelConfig = {
   baseUrl?: string;
 };
 
+export type AudioTranscriptionOptions = {
+  audio: string;
+  model: string;
+  language?: string;
+};
+
 export type PostProcessorData = {
   // The full response text
   response: string;

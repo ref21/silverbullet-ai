@@ -24,6 +24,8 @@ export interface ProviderInterface {
     enrichMessages?: boolean,
   ) => Promise<string>;
   listModels: () => Promise<string[]>;
+  // Add this new method
+  transcribeAudio: (options: AudioTranscriptionOptions) => Promise<string>;
 }
 
 export abstract class AbstractProvider implements ProviderInterface {
